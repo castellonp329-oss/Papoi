@@ -1,354 +1,2634 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#02040c">
-  <title>Hot Wheels Universe</title>
-  <meta name="description" content="Experiencia 3D interactiva inspirada en un universo de Hot Wheels.">
-  <style>
-    :root{
-      --cyan:#19bfff;--blue:#1477ff;--deep:#02040c;--glass:rgba(4,14,34,.56);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--deep)}
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#fff}
-    #app{position:fixed;inset:0}
-    canvas{display:block;width:100%;height:100%;touch-action:none}
-    .loader{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#01030a;transition:.9s ease}
-    .loader.hide{opacity:0;pointer-events:none}
-    .loader-box{text-align:center}
-    .loader-logo{font-weight:950;font-style:italic;letter-spacing:.08em;font-size:clamp(28px,7vw,64px);
-      color:#ff3b20;text-shadow:2px 2px 0 #ffc400,0 0 24px rgba(0,153,255,.9)}
-    .loader-line{width:min(280px,65vw);height:2px;margin:22px auto 12px;background:rgba(22,178,255,.18);overflow:hidden}
-    .loader-line i{display:block;width:35%;height:100%;background:#12b8ff;box-shadow:0 0 16px #12b8ff;animation:load 1.1s infinite}
-    .loader-small{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#7edcff}
-    @keyframes load{from{transform:translateX(-110%)}to{transform:translateX(310%)}}
 
-    .hud{position:fixed;inset:0;z-index:5;pointer-events:none}
-    .top{position:absolute;top:22px;left:50%;transform:translateX(-50%);text-align:center;width:min(900px,94vw)}
-    .top h1{margin:0;font-size:clamp(21px,4vw,48px);font-weight:950;letter-spacing:.045em;text-transform:uppercase;
-      color:#21baff;text-shadow:0 0 7px #00aaff,0 0 26px #006cff,0 0 60px rgba(0,82,255,.9)}
-    .top p{margin:7px 0 0;font-size:clamp(8px,1.1vw,12px);letter-spacing:.34em;color:#b8ecff;text-transform:uppercase}
-    .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.16em;
-      color:#a6dfff;text-transform:uppercase;background:rgba(1,8,22,.48);border:1px solid rgba(21,166,255,.3);
-      padding:9px 14px;border-radius:999px;backdrop-filter:blur(8px);white-space:nowrap}
-    .panel{position:absolute;right:18px;top:18px;width:min(290px,82vw);padding:15px 16px;border-radius:16px;
-      background:linear-gradient(180deg,rgba(5,18,43,.76),rgba(1,7,18,.52));border:1px solid rgba(31,179,255,.32);
-      box-shadow:0 0 30px rgba(0,101,255,.16);backdrop-filter:blur(14px);opacity:0;transform:translateY(-10px);
-      transition:.35s ease}
-    .panel.show{opacity:1;transform:none}
-    .panel .name{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#fff}
-    .panel .meta{margin-top:5px;font-size:10px;color:#7edcff;letter-spacing:.12em;text-transform:uppercase}
-    .panel button{margin-top:12px;border:1px solid #12aaff;background:rgba(0,123,255,.1);color:#bdeeff;
-      border-radius:999px;padding:7px 11px;font-size:10px;cursor:pointer;pointer-events:auto}
-    .panel button:hover{background:rgba(0,145,255,.24)}
-    .controls{position:absolute;left:18px;top:18px;display:flex;gap:8px;pointer-events:auto}
-    .controls button{border:1px solid rgba(27,174,255,.38);background:rgba(2,12,28,.5);color:#bdeeff;
-      border-radius:999px;padding:9px 12px;cursor:pointer;backdrop-filter:blur(8px);font-size:11px}
-    .controls button:hover{background:rgba(0,119,255,.2)}
-    .credit{position:absolute;right:20px;bottom:22px;font-size:9px;color:#4e8bad;letter-spacing:.12em;text-transform:uppercase}
+<meta charset="UTF-8">
 
-    @media(max-width:650px){
-      .panel{top:auto;bottom:60px;right:50%;transform:translate(50%,10px)}
-      .panel.show{transform:translate(50%,0)}
-      .controls{top:12px;left:12px}
-      .top{top:68px}
-      .credit{display:none}
-      .hint{bottom:18px;font-size:8px}
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>Hot Wheels Universe</title>
+
+<meta
+    name="theme-color"
+    content="#02030c"
+>
+
+<meta
+    name="description"
+    content="Hot Wheels Universe - Feliz Día de los Hot Wheels"
+>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#02030c;
+    color:white;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+body{
+    touch-action:none;
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#canvas{
+
+    position:fixed;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+}
+
+
+/* =========================================================
+   CINEMATIC INTRO
+========================================================= */
+
+#intro{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-direction:column;
+
+    pointer-events:none;
+
+    background:
+
+        radial-gradient(
+            circle at center,
+            rgba(10,80,180,.15),
+            rgba(0,0,0,.98) 65%
+        );
+
+    transition:
+        opacity 1.4s ease,
+        visibility 1.4s ease;
+
+}
+
+
+#intro.hidden{
+
+    opacity:0;
+
+    visibility:hidden;
+
+}
+
+
+.introLogo{
+
+    font-size:
+        clamp(
+            38px,
+            9vw,
+            100px
+        );
+
+    font-weight:1000;
+
+    font-style:italic;
+
+    letter-spacing:-5px;
+
+    color:#fff;
+
+    text-shadow:
+
+        0 0 5px #fff,
+
+        0 0 15px #00aaff,
+
+        0 0 35px #008cff,
+
+        0 0 70px #006eff;
+
+    animation:
+
+        logoIn 1.7s
+        cubic-bezier(.17,.67,.2,1)
+        forwards;
+
+}
+
+
+.introSubtitle{
+
+    margin-top:12px;
+
+    font-size:
+        clamp(
+            14px,
+            3vw,
+            28px
+        );
+
+    letter-spacing:
+        clamp(
+            5px,
+            2vw,
+            14px
+        );
+
+    color:#53c8ff;
+
+    opacity:0;
+
+    animation:
+
+        subtitleIn
+        1.5s
+        1s
+        ease
+        forwards;
+
+}
+
+
+.introLine{
+
+    width:min(
+        360px,
+        65vw
+    );
+
+    height:2px;
+
+    margin-top:28px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            #00aaff,
+            #fff,
+            #00aaff,
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px #008cff;
+
+    transform:scaleX(0);
+
+    animation:
+
+        lineIn
+        1.3s
+        1.2s
+        ease
+        forwards;
+
+}
+
+
+@keyframes logoIn{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            scale(.5)
+            translateY(30px);
+
+        filter:blur(15px);
+
     }
-  </style>
+
+    to{
+
+        opacity:1;
+
+        transform:
+            scale(1)
+            translateY(0);
+
+        filter:blur(0);
+
+    }
+
+}
+
+
+@keyframes subtitleIn{
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+
+@keyframes lineIn{
+
+    to{
+
+        transform:scaleX(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+#loading{
+
+    position:fixed;
+
+    z-index:101;
+
+    left:50%;
+
+    bottom:12%;
+
+    transform:
+        translateX(-50%);
+
+    width:min(
+        340px,
+        75vw
+    );
+
+    text-align:center;
+
+    transition:
+        opacity .7s ease;
+
+}
+
+
+.loadingText{
+
+    font-size:12px;
+
+    letter-spacing:4px;
+
+    color:#8adfff;
+
+    margin-bottom:10px;
+
+}
+
+
+.loadingBar{
+
+    width:100%;
+
+    height:3px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    overflow:hidden;
+
+    border-radius:20px;
+
+}
+
+
+.loadingProgress{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #0077ff,
+            #00d9ff,
+            white
+        );
+
+    box-shadow:
+        0 0 15px #00bfff;
+
+    transition:
+        width .25s ease;
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+#hud{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:20;
+
+    pointer-events:none;
+
+}
+
+
+.hudTop{
+
+    position:absolute;
+
+    top:25px;
+
+    left:25px;
+
+    right:25px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+
+.brand{
+
+    pointer-events:none;
+
+}
+
+
+.brandMain{
+
+    font-size:
+        clamp(
+            24px,
+            5vw,
+            52px
+        );
+
+    font-weight:1000;
+
+    font-style:italic;
+
+    letter-spacing:-2px;
+
+    color:white;
+
+    text-shadow:
+
+        0 0 5px white,
+
+        0 0 20px #008cff,
+
+        0 0 40px #0066ff;
+
+}
+
+
+.brandSub{
+
+    margin-top:4px;
+
+    color:#4bc9ff;
+
+    font-size:
+        clamp(
+            9px,
+            1.8vw,
+            14px
+        );
+
+    letter-spacing:
+        clamp(
+            4px,
+            1vw,
+            9px
+        );
+
+}
+
+
+.buttons{
+
+    display:flex;
+
+    gap:8px;
+
+    pointer-events:auto;
+
+}
+
+
+.hudButton{
+
+    border:
+        1px solid
+        rgba(0,174,255,.55);
+
+    background:
+        rgba(0,10,30,.55);
+
+    color:#bceeff;
+
+    padding:
+        9px 13px;
+
+    border-radius:7px;
+
+    font-size:11px;
+
+    letter-spacing:1px;
+
+    cursor:pointer;
+
+    backdrop-filter:
+        blur(12px);
+
+    box-shadow:
+        0 0 15px
+        rgba(0,130,255,.12);
+
+    transition:
+        .25s ease;
+
+}
+
+
+.hudButton:hover{
+
+    background:
+        rgba(0,120,255,.2);
+
+    color:white;
+
+    border-color:
+        #00bfff;
+
+    box-shadow:
+        0 0 20px
+        rgba(0,160,255,.4);
+
+}
+
+
+/* =========================================================
+   CENTER TITLE
+========================================================= */
+
+#title{
+
+    position:absolute;
+
+    left:50%;
+
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    text-align:center;
+
+    pointer-events:none;
+
+    width:100%;
+
+}
+
+
+.titleSmall{
+
+    font-size:
+        clamp(
+            10px,
+            2vw,
+            18px
+        );
+
+    letter-spacing:
+        clamp(
+            5px,
+            2vw,
+            13px
+        );
+
+    color:#5acfff;
+
+    text-shadow:
+        0 0 15px #008cff;
+
+    opacity:.8;
+
+}
+
+
+.titleBig{
+
+    margin-top:7px;
+
+    font-size:
+        clamp(
+            35px,
+            9vw,
+            100px
+        );
+
+    font-weight:1000;
+
+    font-style:italic;
+
+    color:white;
+
+    text-shadow:
+
+        0 0 5px white,
+
+        0 0 20px #00aaff,
+
+        0 0 50px #0066ff,
+
+        0 0 100px #003cff;
+
+    opacity:.93;
+
+}
+
+
+/* =========================================================
+   SELECTED CAR PANEL
+========================================================= */
+
+#selection{
+
+    position:absolute;
+
+    right:25px;
+
+    bottom:25px;
+
+    width:
+        min(
+            290px,
+            calc(100vw - 50px)
+        );
+
+    padding:17px;
+
+    border:
+        1px solid
+        rgba(0,170,255,.4);
+
+    border-radius:12px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(2,12,35,.88),
+            rgba(0,0,12,.65)
+        );
+
+    backdrop-filter:
+        blur(15px);
+
+    box-shadow:
+
+        0 0 35px
+        rgba(0,120,255,.14);
+
+    transform:
+        translateY(20px);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        .35s ease;
+
+}
+
+
+#selection.show{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+
+}
+
+
+.selectionLabel{
+
+    color:#42c8ff;
+
+    font-size:9px;
+
+    letter-spacing:3px;
+
+    margin-bottom:6px;
+
+}
+
+
+.selectionName{
+
+    font-size:25px;
+
+    font-weight:900;
+
+    font-style:italic;
+
+    text-transform:uppercase;
+
+    text-shadow:
+        0 0 15px
+        rgba(0,170,255,.7);
+
+}
+
+
+.selectionType{
+
+    color:#9dbbd0;
+
+    font-size:11px;
+
+    margin-top:5px;
+
+}
+
+
+.selectionHint{
+
+    color:#526b7c;
+
+    font-size:9px;
+
+    margin-top:14px;
+
+    letter-spacing:1px;
+
+}
+
+
+/* =========================================================
+   INSTRUCTIONS
+========================================================= */
+
+#instructions{
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:24px;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        rgba(180,220,240,.45);
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    pointer-events:none;
+
+    text-align:center;
+
+}
+
+
+/* =========================================================
+   ERROR SCREEN
+========================================================= */
+
+#error{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:1000;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:30px;
+
+    background:#02030c;
+
+    text-align:center;
+
+}
+
+
+.errorBox{
+
+    max-width:600px;
+
+    border:
+        1px solid
+        rgba(0,170,255,.4);
+
+    border-radius:15px;
+
+    padding:25px;
+
+    background:
+        rgba(0,20,40,.8);
+
+    box-shadow:
+        0 0 40px
+        rgba(0,100,255,.2);
+
+}
+
+
+.errorTitle{
+
+    color:#5bd5ff;
+
+    font-size:25px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+
+}
+
+
+.errorText{
+
+    color:#9db8c8;
+
+    font-size:13px;
+
+    line-height:1.6;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    .hudTop{
+
+        top:15px;
+
+        left:15px;
+
+        right:15px;
+
+    }
+
+    .buttons{
+
+        flex-direction:column;
+
+        align-items:flex-end;
+
+    }
+
+    #selection{
+
+        right:15px;
+
+        bottom:15px;
+
+    }
+
+    #instructions{
+
+        display:none;
+
+    }
+
+}
+
+</style>
 </head>
+
+
 <body>
-<div id="app"></div>
 
-<div class="loader" id="loader">
-  <div class="loader-box">
-    <div class="loader-logo">HOT WHEELS</div>
-    <div class="loader-line"><i></i></div>
-    <div class="loader-small">Entrando al universo</div>
-  </div>
+
+<!-- =====================================================
+     CANVAS
+===================================================== -->
+
+<canvas id="canvas"></canvas>
+
+
+<!-- =====================================================
+     INTRO
+===================================================== -->
+
+<div id="intro">
+
+    <div class="introLogo">
+        HOT WHEELS
+    </div>
+
+    <div class="introSubtitle">
+        UNIVERSE
+    </div>
+
+    <div class="introLine"></div>
+
 </div>
 
-<div class="hud">
-  <div class="controls">
-    <button id="resetBtn">REINICIAR CÁMARA</button>
-    <button id="autoBtn">AUTO: ON</button>
-  </div>
-  <div class="top">
-    <h1>Feliz Día de los Hot Wheels</h1>
-    <p>Un universo hecho de velocidad, recuerdos y pasión</p>
-  </div>
-  <div class="panel" id="panel">
-    <div class="name" id="carName">Hot Wheels</div>
-    <div class="meta" id="carMeta">Vehículo seleccionado</div>
-    <button id="focusBtn">ACERCAR VEHÍCULO</button>
-  </div>
-  <div class="hint">Arrastra para explorar · rueda/pellizca para acercar · toca un carro</div>
-  <div class="credit">Experiencia 3D · GitHub Pages</div>
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<div id="loading">
+
+    <div class="loadingText">
+        INITIALIZING UNIVERSE
+    </div>
+
+    <div class="loadingBar">
+
+        <div
+            id="loadingProgress"
+            class="loadingProgress">
+        </div>
+
+    </div>
+
 </div>
+
+
+<!-- =====================================================
+     HUD
+===================================================== -->
+
+<div id="hud">
+
+    <div class="hudTop">
+
+        <div class="brand">
+
+            <div class="brandMain">
+                HOT WHEELS
+            </div>
+
+            <div class="brandSub">
+                UNIVERSE EXPERIENCE
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="hudButton"
+                id="autoButton">
+
+                AUTO: ON
+
+            </button>
+
+
+            <button
+                class="hudButton"
+                id="resetButton">
+
+                RESET CAMERA
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="title">
+
+        <div class="titleSmall">
+            FELIZ DÍA DE LOS
+        </div>
+
+        <div class="titleBig">
+            HOT WHEELS
+        </div>
+
+    </div>
+
+
+    <div id="selection">
+
+        <div class="selectionLabel">
+            VEHICLE SELECTED
+        </div>
+
+        <div
+            id="selectionName"
+            class="selectionName">
+
+            --
+
+        </div>
+
+        <div
+            id="selectionType"
+            class="selectionType">
+
+            --
+
+        </div>
+
+        <div class="selectionHint">
+            CLICK / TAP PARA ENFOCAR
+        </div>
+
+    </div>
+
+
+    <div id="instructions">
+
+        ARRASTRA PARA EXPLORAR · RUEDA PARA ZOOM · SELECCIONA UN VEHÍCULO
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ERROR
+===================================================== -->
+
+<div id="error">
+
+    <div class="errorBox">
+
+        <div class="errorTitle">
+            UNIVERSO NO DISPONIBLE
+        </div>
+
+        <div
+            id="errorText"
+            class="errorText">
+
+            No se pudo iniciar la experiencia 3D.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     THREE.JS IMPORT MAP
+===================================================== -->
+
+<script type="importmap">
+
+{
+    "imports": {
+
+        "three":
+            "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+
+        "three/addons/":
+            "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+
+    }
+}
+
+</script>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
-import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/controls/OrbitControls.js";
 
-const app = document.querySelector("#app");
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x01030a);
-scene.fog = new THREE.FogExp2(0x01030a, 0.0028);
+import * as THREE from "three";
 
-const camera = new THREE.PerspectiveCamera(48, innerWidth/innerHeight, 0.1, 1800);
-camera.position.set(0, 26, 92);
+import {
+    OrbitControls
+} from "three/addons/controls/OrbitControls.js";
 
-const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(innerWidth, innerHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.18;
-app.appendChild(renderer.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = .045;
-controls.minDistance = 18;
-controls.maxDistance = 210;
-controls.maxPolarAngle = Math.PI*.78;
-controls.target.set(0,0,0);
+/* =========================================================
+   ELEMENTOS
+========================================================= */
 
-scene.add(new THREE.AmbientLight(0x214c88, .65));
-const key = new THREE.DirectionalLight(0xa9ddff, 1.25);
-key.position.set(-25,40,35); scene.add(key);
-const cyan = new THREE.PointLight(0x008cff, 18, 180, 2);
-cyan.position.set(0,8,0); scene.add(cyan);
-const blue = new THREE.PointLight(0x003dff, 12, 150, 2);
-blue.position.set(-70,-12,-40); scene.add(blue);
+const canvas =
+    document.getElementById("canvas");
 
-const universe = new THREE.Group();
-scene.add(universe);
+const intro =
+    document.getElementById("intro");
 
-function makeStars(count=2600){
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(count*3), sizes = new Float32Array(count);
-  for(let i=0;i<count;i++){
-    const r = 180 + Math.random()*620, a=Math.random()*Math.PI*2, b=(Math.random()-.5)*Math.PI;
-    pos[i*3]=Math.cos(a)*Math.cos(b)*r;
-    pos[i*3+1]=Math.sin(b)*r*.62;
-    pos[i*3+2]=Math.sin(a)*Math.cos(b)*r;
-    sizes[i]=Math.random()*2.2+.4;
-  }
-  geo.setAttribute("position",new THREE.BufferAttribute(pos,3));
-  geo.setAttribute("size",new THREE.BufferAttribute(sizes,1));
-  const mat = new THREE.PointsMaterial({color:0x73cfff,size:.9,sizeAttenuation:true,transparent:true,opacity:.82});
-  scene.add(new THREE.Points(geo,mat));
-}
-makeStars();
+const loading =
+    document.getElementById("loading");
 
-function glowSprite(color=0x008cff, size=55){
-  const c=document.createElement("canvas"); c.width=c.height=128;
-  const x=c.getContext("2d"), g=x.createRadialGradient(64,64,0,64,64,64);
-  const col=new THREE.Color(color), hex="#"+col.getHexString();
-  g.addColorStop(0,"rgba(255,255,255,.9)");
-  g.addColorStop(.08,hex);
-  g.addColorStop(.35,hex+"99");
-  g.addColorStop(1,"rgba(0,0,0,0)");
-  x.fillStyle=g;x.fillRect(0,0,128,128);
-  const tex=new THREE.CanvasTexture(c);
-  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
-  s.scale.set(size,size,size); return s;
-}
-for(let i=0;i<11;i++){
-  const g=glowSprite(i%3?0x006cff:0x00baff, 22+Math.random()*55);
-  const a=Math.random()*Math.PI*2,r=25+Math.random()*110;
-  g.position.set(Math.cos(a)*r,(Math.random()-.5)*45,Math.sin(a)*r);
-  universe.add(g);
-}
+const loadingProgress =
+    document.getElementById("loadingProgress");
 
-function makeTextSprite(text){
-  const c=document.createElement("canvas"); c.width=1024;c.height=180;
-  const ctx=c.getContext("2d");
-  ctx.font="900 54px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.shadowColor="#007dff";ctx.shadowBlur=20;ctx.fillStyle="#28bfff";ctx.fillText(text,512,90);
-  const tex=new THREE.CanvasTexture(c); tex.colorSpace=THREE.SRGBColorSpace;
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,opacity:.88}));
-  sp.scale.set(18,3.15,1); return sp;
-}
-const phrases=["Esperanza","Meta","Mi paz","Libertad","Campanadas","Sueños","Familia","Amigos","Velocidad","Pasión","Diversión","Confianza","Aventura","Recuerdos","Amor","Sonríe","Camino","Único"];
-for(let i=0;i<34;i++){
-  const s=makeTextSprite(phrases[i%phrases.length]);
-  const a=i/34*Math.PI*2+Math.random()*.45, r=35+Math.random()*70;
-  s.position.set(Math.cos(a)*r,(Math.random()-.5)*34,Math.sin(a)*r);
-  s.rotation.z=(Math.random()-.5)*.16;
-  universe.add(s);
-}
+const errorScreen =
+    document.getElementById("error");
 
-const carData=[
-  ["Blaze Runner",0xff2b17,0xffc400],
-  ["Blue Comet",0x087dff,0x00d7ff],
-  ["Inferno GT",0xe9190a,0xff8b00],
-  ["Neon Racer",0x00a8ff,0xffffff],
-  ["Solar Flame",0xff4a00,0xffdc00],
-  ["Midnight X",0x102a61,0x24baff],
-  ["Turbo Strike",0xd20a0a,0xffca00],
-  ["Electric Arrow",0x0b74ff,0x8eeeff]
-];
+const errorText =
+    document.getElementById("errorText");
 
-const selectable=[];
-const wheelGeo=new THREE.CylinderGeometry(.52,.52,.30,24);
-wheelGeo.rotateZ(Math.PI/2);
+const selection =
+    document.getElementById("selection");
 
-function createCar(name, bodyColor, stripeColor){
-  const g=new THREE.Group();
-  g.userData={isCar:true,name,baseY:0,spin:Math.random()*.8};
-  const bodyMat=new THREE.MeshStandardMaterial({color:bodyColor,metalness:.38,roughness:.26});
-  const darkMat=new THREE.MeshStandardMaterial({color:0x05070c,metalness:.35,roughness:.3});
-  const chrome=new THREE.MeshStandardMaterial({color:0xbdd6e6,metalness:.8,roughness:.18});
-  const stripeMat=new THREE.MeshStandardMaterial({color:stripeColor,emissive:stripeColor,emissiveIntensity:.16,metalness:.25,roughness:.3});
+const selectionName =
+    document.getElementById("selectionName");
 
-  const base=new THREE.Mesh(new THREE.BoxGeometry(5.9,1.05,2.55),bodyMat);
-  base.position.y=.65;base.scale.set(1,.95,1);g.add(base);
+const selectionType =
+    document.getElementById("selectionType");
 
-  const hood=new THREE.Mesh(new THREE.BoxGeometry(2.0,.42,2.35),bodyMat);
-  hood.position.set(2.05,1.18,0);g.add(hood);
+const autoButton =
+    document.getElementById("autoButton");
 
-  const rear=new THREE.Mesh(new THREE.BoxGeometry(1.4,.52,2.4),bodyMat);
-  rear.position.set(-2.15,1.03,0);g.add(rear);
+const resetButton =
+    document.getElementById("resetButton");
 
-  const cabin=new THREE.Mesh(new THREE.CapsuleGeometry(1.05,.95,6,16),darkMat);
-  cabin.scale.set(1.15,.62,1.0);cabin.position.set(-.45,1.58,0);g.add(cabin);
 
-  const windshield=new THREE.Mesh(new THREE.BoxGeometry(.72,.04,1.65),new THREE.MeshStandardMaterial({color:0x1ca9dc,transparent:true,opacity:.38,metalness:.6,roughness:.12}));
-  windshield.position.set(.18,1.72,0);windshield.rotation.z=-.42;g.add(windshield);
+/* =========================================================
+   ESCENA
+========================================================= */
 
-  const stripe=new THREE.Mesh(new THREE.BoxGeometry(5.55,.035,.36),stripeMat);
-  stripe.position.set(.05,1.22,.01);g.add(stripe);
+const scene =
+    new THREE.Scene();
 
-  const spoiler=new THREE.Mesh(new THREE.BoxGeometry(.22, .6, 2.7),bodyMat);
-  spoiler.position.set(-2.9,1.45,0);g.add(spoiler);
-  const spoilerBar=new THREE.Mesh(new THREE.BoxGeometry(.9,.16,2.9),bodyMat);
-  spoilerBar.position.set(-2.9,1.72,0);g.add(spoilerBar);
+scene.background =
+    new THREE.Color(
+        0x01020a
+    );
 
-  [-1.85,1.85].forEach(x=>{
-    [-1.35,1.35].forEach(z=>{
-      const w=new THREE.Mesh(wheelGeo,darkMat);w.position.set(x,.38,z);g.add(w);
-      const hub=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.32,16),chrome);
-      hub.rotation.z=Math.PI/2;hub.position.set(x,.38,z);g.add(hub);
-    });
-  });
+scene.fog =
+    new THREE.FogExp2(
+        0x020718,
+        0.00085
+    );
 
-  const headMat=new THREE.MeshStandardMaterial({color:0xeaffff,emissive:0x68dfff,emissiveIntensity:5});
-  [-.76,.76].forEach(z=>{
-    const l=new THREE.Mesh(new THREE.BoxGeometry(.28,.18,.42),headMat);l.position.set(2.94,1.0,z);g.add(l);
-  });
-  const tailMat=new THREE.MeshStandardMaterial({color:0xff1600,emissive:0xff0800,emissiveIntensity:3});
-  [-.76,.76].forEach(z=>{
-    const l=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,.42),tailMat);l.position.set(-2.94,1.0,z);g.add(l);
-  });
 
-  const logo=makeTextSprite("HOT WHEELS");
-  logo.scale.set(3.2,.56,1);logo.position.set(.2,1.25,1.31);logo.rotation.y=Math.PI;
-  g.add(logo);
+/* =========================================================
+   CÁMARA
+========================================================= */
 
-  const halo=glowSprite(stripeColor,9);halo.position.y=.2;g.add(halo);
-  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false}});
-  selectable.push(g);
-  return g;
-}
+const camera =
+    new THREE.PerspectiveCamera(
 
-const ring=new THREE.Group();
-universe.add(ring);
-const radius=54;
-for(let i=0;i<28;i++){
-  const d=carData[i%carData.length], car=createCar(...d);
-  const a=i/28*Math.PI*2;
-  const r=radius+(i%4-1.5)*9;
-  car.position.set(Math.cos(a)*r,(Math.sin(i*1.9)*9)+(i%3-1)*3,Math.sin(a)*r);
-  car.rotation.y=-a+Math.PI/2;
-  car.scale.setScalar(.72+(i%5)*.07);
-  car.userData.orbitRadius=r;
-  car.userData.angle=a;
-  car.userData.speed=.025+(i%7)*.003;
-  ring.add(car);
-}
+        55,
 
-const centerRing=new THREE.Mesh(
-  new THREE.TorusGeometry(14,.08,8,160),
-  new THREE.MeshBasicMaterial({color:0x008cff,transparent:true,opacity:.55,blending:THREE.AdditiveBlending})
+        window.innerWidth /
+        window.innerHeight,
+
+        0.1,
+
+        5000
+
+    );
+
+
+camera.position.set(
+    0,
+    85,
+    260
 );
-centerRing.rotation.x=Math.PI/2;universe.add(centerRing);
 
-const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
-let selected=null, auto=true, focusTarget=null;
 
-function pick(e){
-  const r=renderer.domElement.getBoundingClientRect();
-  mouse.x=((e.clientX-r.left)/r.width)*2-1;
-  mouse.y=-((e.clientY-r.top)/r.height)*2+1;
-  raycaster.setFromCamera(mouse,camera);
-  const hits=raycaster.intersectObjects(selectable,true);
-  if(!hits.length)return;
-  let o=hits[0].object;
-  while(o && !o.userData.isCar)o=o.parent;
-  if(o) selectCar(o);
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer =
+    new THREE.WebGLRenderer({
+
+        canvas,
+
+        antialias:true,
+
+        alpha:false,
+
+        powerPreference:
+            "high-performance"
+
+    });
+
+
+renderer.setSize(
+
+    window.innerWidth,
+
+    window.innerHeight
+
+);
+
+
+renderer.setPixelRatio(
+
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
+
+);
+
+
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+
+renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+
+renderer.toneMappingExposure =
+    1.25;
+
+
+/* =========================================================
+   CONTROLES
+========================================================= */
+
+const controls =
+    new OrbitControls(
+
+        camera,
+
+        renderer.domElement
+
+    );
+
+
+controls.enableDamping =
+    true;
+
+controls.dampingFactor =
+    .055;
+
+controls.minDistance =
+    80;
+
+controls.maxDistance =
+    800;
+
+controls.target.set(
+    0,
+    0,
+    0
+);
+
+
+/* =========================================================
+   ILUMINACIÓN
+========================================================= */
+
+const ambient =
+    new THREE.AmbientLight(
+        0x4c83b5,
+        1.4
+    );
+
+scene.add(
+    ambient
+);
+
+
+const blueLight =
+    new THREE.PointLight(
+        0x008cff,
+        220,
+        900
+    );
+
+blueLight.position.set(
+    0,
+    40,
+    0
+);
+
+scene.add(
+    blueLight
+);
+
+
+const cyanLight =
+    new THREE.PointLight(
+        0x00eaff,
+        150,
+        700
+    );
+
+cyanLight.position.set(
+    -200,
+    100,
+    100
+);
+
+scene.add(
+    cyanLight
+);
+
+
+const whiteLight =
+    new THREE.PointLight(
+        0xffffff,
+        90,
+        500
+    );
+
+whiteLight.position.set(
+    150,
+    200,
+    200
+);
+
+scene.add(
+    whiteLight
+);
+
+
+/* =========================================================
+   UNIVERSO
+========================================================= */
+
+const universe =
+    new THREE.Group();
+
+scene.add(
+    universe
+);
+
+
+/* =========================================================
+   ESTRELLAS
+========================================================= */
+
+function createStars(){
+
+    const count =
+        window.innerWidth < 700
+        ? 1600
+        : 3200;
+
+
+    const positions =
+        new Float32Array(
+            count * 3
+        );
+
+
+    for(
+        let i = 0;
+        i < count;
+        i++
+    ){
+
+        const radius =
+            500 +
+            Math.random() *
+            1600;
+
+
+        const theta =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        const phi =
+            Math.acos(
+
+                THREE.MathUtils.randFloat(
+                    -1,
+                    1
+                )
+
+            );
+
+
+        positions[i * 3] =
+
+            radius *
+            Math.sin(phi) *
+            Math.cos(theta);
+
+
+        positions[i * 3 + 1] =
+
+            radius *
+            Math.cos(phi);
+
+
+        positions[i * 3 + 2] =
+
+            radius *
+            Math.sin(phi) *
+            Math.sin(theta);
+
+    }
+
+
+    const geometry =
+        new THREE.BufferGeometry();
+
+
+    geometry.setAttribute(
+
+        "position",
+
+        new THREE.BufferAttribute(
+            positions,
+            3
+        )
+
+    );
+
+
+    const material =
+        new THREE.PointsMaterial({
+
+            color:
+                0x9edcff,
+
+            size:
+                1.5,
+
+            transparent:
+                true,
+
+            opacity:
+                .8,
+
+            sizeAttenuation:
+                true
+
+        });
+
+
+    const stars =
+        new THREE.Points(
+
+            geometry,
+
+            material
+
+        );
+
+
+    universe.add(
+        stars
+    );
+
+
+    return stars;
+
 }
-renderer.domElement.addEventListener("pointerdown",pick);
 
-function selectCar(car){
-  selected=car; focusTarget=car;
-  document.querySelector("#carName").textContent=car.userData.name;
-  document.querySelector("#carMeta").textContent="Vehículo seleccionado · toca para enfocar";
-  document.querySelector("#panel").classList.add("show");
-  selectable.forEach(c=>c.scale.multiplyScalar(c===car?1.05:1));
+
+const stars =
+    createStars();
+
+
+/* =========================================================
+   NEBULOSA
+========================================================= */
+
+function createNebula(
+    x,
+    y,
+    z,
+    scale,
+    color
+){
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    canvas.width =
+        256;
+
+    canvas.height =
+        256;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    const gradient =
+        ctx.createRadialGradient(
+
+            128,
+            128,
+            5,
+
+            128,
+            128,
+            128
+
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(255,255,255,.9)"
+    );
+
+
+    gradient.addColorStop(
+        .15,
+        "rgba(50,180,255,.6)"
+    );
+
+
+    gradient.addColorStop(
+        .45,
+        color
+    );
+
+
+    gradient.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        256,
+        256
+    );
+
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+
+    const material =
+        new THREE.SpriteMaterial({
+
+            map:
+                texture,
+
+            transparent:
+                true,
+
+            depthWrite:
+                false,
+
+            blending:
+                THREE.AdditiveBlending
+
+        });
+
+
+    const sprite =
+        new THREE.Sprite(
+            material
+        );
+
+
+    sprite.position.set(
+        x,
+        y,
+        z
+    );
+
+
+    spr
+  
+const raycaster =
+    new THREE.Raycaster();
+
+const pointer =
+    new THREE.Vector2();
+
+let selectedCar =
+    null;
+
+
+/* =========================================================
+   ANIMACIÓN DE CÁMARA
+========================================================= */
+
+let cameraAnimation =
+    null;
+
+
+/* =========================================================
+   AUTO ROTACIÓN
+========================================================= */
+
+let autoRotate =
+    true;
+
+
+/* =========================================================
+   RELOJ
+========================================================= */
+
+const clock =
+    new THREE.Clock();
+
+let elapsed =
+    0;
+
+
+/* =========================================================
+   ACTUALIZAR POSICIÓN DEL PUNTERO
+========================================================= */
+
+function updatePointer(event){
+
+    let x;
+    let y;
+
+
+    if(
+        event.touches &&
+        event.touches.length > 0
+    ){
+
+        x =
+            event.touches[0].clientX;
+
+        y =
+            event.touches[0].clientY;
+
+    }else{
+
+        x =
+            event.clientX;
+
+        y =
+            event.clientY;
+
+    }
+
+
+    pointer.x =
+        (x / window.innerWidth) * 2 - 1;
+
+
+    pointer.y =
+        -(y / window.innerHeight) * 2 + 1;
+
 }
 
-function focusSelected(){
-  if(!selected)return;
-  const p=selected.getWorldPosition(new THREE.Vector3());
-  controls.target.lerp(p,.8);
-  const dir=new THREE.Vector3().subVectors(camera.position,p).normalize();
-  camera.position.copy(p.clone().add(dir.multiplyScalar(15)).add(new THREE.Vector3(0,5,0)));
+
+/* =========================================================
+   BUSCAR AUTO BAJO EL PUNTERO
+========================================================= */
+
+function getCarFromPointer(){
+
+    raycaster.setFromCamera(
+        pointer,
+        camera
+    );
+
+
+    const intersections =
+        raycaster.intersectObjects(
+            cars,
+            true
+        );
+
+
+    for(
+        const hit of intersections
+    ){
+
+        let object =
+            hit.object;
+
+
+        while(
+            object &&
+            !object.userData.isCar
+        ){
+
+            object =
+                object.parent;
+
+        }
+
+
+        if(
+            object &&
+            object.userData.isCar
+        ){
+
+            return object;
+
+        }
+
+    }
+
+
+    return null;
+
 }
 
-document.querySelector("#focusBtn").onclick=focusSelected;
-document.querySelector("#resetBtn").onclick=()=>{
-  camera.position.set(0,26,92);controls.target.set(0,0,0);selected=null;
-  document.querySelector("#panel").classList.remove("show");
-};
-document.querySelector("#autoBtn").onclick=e=>{
-  auto=!auto;e.currentTarget.textContent="AUTO: "+(auto?"ON":"OFF");
-};
 
-let t0=performance.now();
-function animate(now){
-  requestAnimationFrame(animate);
-  const dt=Math.min(.05,(now-t0)/1000);t0=now;
+/* =========================================================
+   SELECCIONAR AUTO
+========================================================= */
 
-  if(auto){
-    ring.rotation.y += dt*.035;
-    centerRing.rotation.z += dt*.14;
-  }
-  selectable.forEach((car,i)=>{
-    const wobble=Math.sin(now*.0012+i)*.06;
-    car.position.y += (wobble-(car.userData.wobble||0))*.08;
-    car.userData.wobble=wobble;
-    car.rotation.z=Math.sin(now*.0008+i)*.025;
-    if(selected===car) car.rotation.y+=dt*.35;
-  });
+function selectCar(){
 
-  if(focusTarget){
-    const p=focusTarget.getWorldPosition(new THREE.Vector3());
-    controls.target.lerp(p,.025);
-  }
-  controls.update();
-  renderer.render(scene,camera);
+    const car =
+        getCarFromPointer();
+
+
+    if(!car){
+
+        return;
+
+    }
+
+
+    selectedCar =
+        car;
+
+
+    selectionName.textContent =
+        car.userData.name;
+
+
+    selectionType.textContent =
+        car.userData.type;
+
+
+    selection.classList.add(
+        "show"
+    );
+
+
+    focusCar(
+        car
+    );
+
 }
-requestAnimationFrame(animate);
 
-addEventListener("resize",()=>{
-  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-});
-setTimeout(()=>document.querySelector("#loader").classList.add("hide"),1800);
+
+/* =========================================================
+   ENFOCAR AUTO
+========================================================= */
+
+function focusCar(car){
+
+    const target =
+        car.getWorldPosition(
+            new THREE.Vector3()
+        );
+
+
+    const direction =
+        new THREE.Vector3(
+            1,
+            .45,
+            1
+        ).normalize();
+
+
+    const destination =
+        target.clone().add(
+            direction.multiplyScalar(
+                90
+            )
+        );
+
+
+    animateCamera(
+        destination,
+        target
+    );
+
+}
+
+
+/* =========================================================
+   ANIMAR CÁMARA
+========================================================= */
+
+function animateCamera(
+    destination,
+    target
+){
+
+    cameraAnimation = {
+
+        start:
+            camera.position.clone(),
+
+        end:
+            destination.clone(),
+
+        targetStart:
+            controls.target.clone(),
+
+        targetEnd:
+            target.clone(),
+
+        progress:
+            0
+
+    };
+
+}
+
+
+/* =========================================================
+   RESET DE CÁMARA
+========================================================= */
+
+function resetCamera(){
+
+    animateCamera(
+
+        new THREE.Vector3(
+            0,
+            85,
+            260
+        ),
+
+        new THREE.Vector3(
+            0,
+            0,
+            0
+        )
+
+    );
+
+
+    selectedCar =
+        null;
+
+
+    selection.classList.remove(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   BOTÓN AUTO
+========================================================= */
+
+autoButton.addEventListener(
+    "click",
+    () => {
+
+        autoRotate =
+            !autoRotate;
+
+
+        autoButton.textContent =
+            autoRotate
+            ? "AUTO: ON"
+            : "AUTO: OFF";
+
+    }
+);
+
+
+/* =========================================================
+   BOTÓN RESET
+========================================================= */
+
+resetButton.addEventListener(
+    "click",
+    () => {
+
+        resetCamera();
+
+    }
+);
+
+
+/* =========================================================
+   CLICK DEL MOUSE
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "pointerup",
+    event => {
+
+        updatePointer(
+            event
+        );
+
+
+        selectCar();
+
+    }
+);
+
+
+/* =========================================================
+   SOPORTE TOUCH
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "touchend",
+    event => {
+
+        if(
+            event.changedTouches.length === 0
+        ){
+
+            return;
+
+        }
+
+
+        const touch =
+            event.changedTouches[0];
+
+
+        updatePointer({
+
+            clientX:
+                touch.clientX,
+
+            clientY:
+                touch.clientY
+
+        });
+
+
+        selectCar();
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+/* =========================================================
+   ANIMACIÓN PRINCIPAL
+========================================================= */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    const delta =
+        clock.getDelta();
+
+
+    elapsed +=
+        delta;
+
+
+    /* =====================================================
+       ESTRELLAS
+    ===================================================== */
+
+    stars.rotation.y +=
+        delta * .002;
+
+
+    stars.rotation.x =
+        Math.sin(
+            elapsed * .05
+        ) * .02;
+
+
+    /* =====================================================
+       PARTÍCULAS
+    ===================================================== */
+
+    particles.rotation.y +=
+        delta * .015;
+
+
+    particles.rotation.x =
+        Math.sin(
+            elapsed * .03
+        ) * .02;
+
+
+    /* =====================================================
+       ÓRBITAS
+    ===================================================== */
+
+    orbitGroups.forEach(
+        (item, index) => {
+
+            item.group.rotation.y +=
+                delta *
+                (
+                    .015 +
+                    index * .004
+                );
+
+        }
+    );
+
+
+    /* =====================================================
+       NÚCLEO CENTRAL
+    ===================================================== */
+
+    const corePulse =
+        1 +
+        Math.sin(
+            elapsed * 3
+        ) * .12;
+
+
+    core.scale.setScalar(
+        corePulse
+    );
+
+
+    coreRing.rotation.z +=
+        delta * .7;
+
+
+    centralGlow.material.opacity =
+        .55 +
+        Math.sin(
+            elapsed * 2
+        ) * .15;
+
+
+    /* =====================================================
+       AUTOS
+    ===================================================== */
+
+    cars.forEach(
+        car => {
+
+            /* ---------------------------------------------
+               MOVIMIENTO ORBITAL
+            --------------------------------------------- */
+
+            car.userData.angle +=
+                delta *
+                car.userData.speed;
+
+
+            const angle =
+                car.userData.angle;
+
+
+            const radius =
+                car.userData.radius;
+
+
+            /* ---------------------------------------------
+               POSICIÓN
+            --------------------------------------------- */
+
+            car.position.x =
+                Math.cos(angle) *
+                radius;
+
+
+            car.position.z =
+                Math.sin(angle) *
+                radius;
+
+
+            /* ---------------------------------------------
+               MOVIMIENTO VERTICAL
+            --------------------------------------------- */
+
+            car.position.y =
+
+                car.userData.originalY +
+
+                Math.sin(
+                    elapsed * 1.7 +
+                    car.userData.phase
+                ) * 2.5;
+
+
+            /* ---------------------------------------------
+               ORIENTACIÓN DEL AUTO
+            --------------------------------------------- */
+
+            car.rotation.y =
+                -angle +
+                Math.PI / 2;
+
+
+            /* ---------------------------------------------
+               PEQUEÑO BALANCEO
+            --------------------------------------------- */
+
+            car.rotation.z =
+                Math.sin(
+                    elapsed * 1.5 +
+                    car.userData.phase
+                ) * .025;
+
+
+            car.rotation.x =
+                Math.cos(
+                    elapsed * 1.2 +
+                    car.userData.phase
+                ) * .018;
+
+
+            /* ---------------------------------------------
+               RUEDAS GIRANDO
+            --------------------------------------------- */
+
+            car.userData.wheels.forEach(
+                wheel => {
+
+                    wheel.rotation.x +=
+                        delta * 8;
+
+                }
+            );
+
+
+            /* ---------------------------------------------
+               AUTO SELECCIONADO
+            --------------------------------------------- */
+
+            if(
+                car === selectedCar
+            ){
+
+                const pulse =
+                    1 +
+                    Math.sin(
+                        elapsed * 5
+                    ) * .06;
+
+
+                car.scale.setScalar(
+
+                    car.userData.baseScale *
+                    pulse
+
+                );
+
+            }else{
+
+                car.scale.setScalar(
+
+                    car.userData.baseScale
+
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       ANIMACIÓN DE CÁMARA
+    ===================================================== */
+
+    if(
+        cameraAnimation
+    ){
+
+        cameraAnimation.progress +=
+            delta * 1.7;
+
+
+        const progress =
+            Math.min(
+                cameraAnimation.progress,
+                1
+            );
+
+
+        /*
+           Easing suave
+        */
+
+        const smooth =
+            progress < .5
+
+            ? 2 *
+              progress *
+              progress
+
+            : 1 -
+              Math.pow(
+                  -2 * progress + 2,
+                  2
+              ) / 2;
+
+
+        camera.position.lerpVectors(
+
+            cameraAnimation.start,
+
+            cameraAnimation.end,
+
+            smooth
+
+        );
+
+
+        controls.target.lerpVectors(
+
+            cameraAnimation.targetStart,
+
+            cameraAnimation.targetEnd,
+
+            smooth
+
+        );
+
+
+        if(
+            progress >= 1
+        ){
+
+            cameraAnimation =
+                null;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ROTACIÓN AUTOMÁTICA DEL UNIVERSO
+    ===================================================== */
+
+    if(
+        autoRotate
+    ){
+
+        universe.rotation.y +=
+            delta * .018;
+
+    }
+
+
+    /* =====================================================
+       CONTROLES
+    ===================================================== */
+
+    controls.update();
+
+
+    /* =====================================================
+       RENDER
+    ===================================================== */
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+/* =========================================================
+   INICIAR ANIMACIÓN
+========================================================= */
+
+animate();
+
+
+/* =========================================================
+   CARGADOR
+========================================================= */
+
+let loadingValue =
+    0;
+
+
+const loadingInterval =
+    setInterval(
+        () => {
+
+            loadingValue +=
+                Math.random() * 12 + 5;
+
+
+            loadingValue =
+                Math.min(
+                    loadingValue,
+                    100
+                );
+
+
+            loadingProgress.style.width =
+                loadingValue + "%";
+
+
+            if(
+                loadingValue >= 100
+            ){
+
+                clearInterval(
+                    loadingInterval
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        loading.style.opacity =
+                            "0";
+
+
+                        setTimeout(
+                            () => {
+
+                                loading.style.display =
+                                    "none";
+
+                            },
+                            700
+                        );
+
+                    },
+                    350
+                );
+
+            }
+
+        },
+        120
+    );
+
+
+/* =========================================================
+   INTRO CINEMÁTICA
+========================================================= */
+
+setTimeout(
+    () => {
+
+        intro.classList.add(
+            "hidden"
+        );
+
+    },
+    3000
+);
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+
+            window.innerWidth,
+
+            window.innerHeight
+
+        );
+
+
+        renderer.setPixelRatio(
+
+            Math.min(
+                window.devicePixelRatio,
+                2
+            )
+
+        );
+
+    }
+);
+
+
+/* =========================================================
+   TECLADO
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    event => {
+
+        /* R = RESET */
+
+        if(
+            event.key.toLowerCase() === "r"
+        ){
+
+            resetCamera();
+
+        }
+
+
+        /* A = AUTO */
+
+        if(
+            event.key.toLowerCase() === "a"
+        ){
+
+            autoRotate =
+                !autoRotate;
+
+
+            autoButton.textContent =
+                autoRotate
+                ? "AUTO: ON"
+                : "AUTO: OFF";
+
+        }
+
+
+        /* ESC = DESELECCIONAR */
+
+        if(
+            event.key === "Escape"
+        ){
+
+            selectedCar =
+                null;
+
+
+            selection.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   DOBLE CLICK = ENFOCAR CENTRO
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "dblclick",
+    () => {
+
+        resetCamera();
+
+    }
+);
+
+
+/* =========================================================
+   DETECCIÓN DE WEBGL
+========================================================= */
+
+function checkWebGL(){
+
+    try{
+
+        const testCanvas =
+            document.createElement(
+                "canvas"
+            );
+
+
+        const context =
+            testCanvas.getContext(
+                "webgl2"
+            ) ||
+            testCanvas.getContext(
+                "webgl"
+            );
+
+
+        if(!context){
+
+            throw new Error(
+                "WebGL no está disponible."
+            );
+
+        }
+
+    }catch(error){
+
+        errorScreen.style.display =
+            "flex";
+
+
+        errorText.textContent =
+            "Tu navegador o dispositivo no puede ejecutar WebGL. Prueba con Chrome, Edge o Firefox actualizado.";
+
+    }
+
+}
+
+
+checkWebGL();
+
+
+/* =========================================================
+   MENSAJE DE ERROR SI THREE.JS FALLA
+========================================================= */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "Error:",
+            event.error || event.message
+        );
+
+    }
+);
+
+
+/* =========================================================
+   DETECCIÓN DE PÉRDIDA DE CONTEXTO
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "webglcontextlost",
+    event => {
+
+        event.preventDefault();
+
+
+        errorScreen.style.display =
+            "flex";
+
+
+        errorText.textContent =
+            "Se perdió el contexto gráfico. Recarga la página para volver a iniciar el universo.";
+
+    }
+);
+
+
+/* =========================================================
+   EFECTO DE HOVER EN AUTOS
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "pointermove",
+    event => {
+
+        updatePointer(
+            event
+        );
+
+
+        const car =
+            getCarFromPointer();
+
+
+        if(car){
+
+            renderer.domElement.style.cursor =
+                "pointer";
+
+        }else{
+
+            renderer.domElement.style.cursor =
+                "grab";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CAMBIAR CURSOR AL ARRASTRAR
+========================================================= */
+
+controls.addEventListener(
+    "start",
+    () => {
+
+        renderer.domElement.style.cursor =
+            "grabbing";
+
+    }
+);
+
+
+controls.addEventListener(
+    "end",
+    () => {
+
+        renderer.domElement.style.cursor =
+            "grab";
+
+    }
+);
+
+
+/* =========================================================
+   MENSAJE INICIAL EN CONSOLA
+========================================================= */
+
+console.log(
+    "%c HOT WHEELS UNIVERSE ",
+    "color:#00cfff;font-size:20px;font-weight:bold;"
+);
+
+
+console.log(
+    "Universe initialized."
+);
+
+
+console.log(
+    "Vehicles:",
+    cars.length
+);
+
+
+/* =========================================================
+   FIN
+========================================================= */
+
 </script>
+
 </body>
-</html>
+            </html>
